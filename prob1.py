@@ -1,35 +1,48 @@
-# 2 Problems
-## Problem 1: Closest N Points (Dijkstra?, nlogn closest point)
+## Problem 1: name of closest n Points from point x,y given list of named-points
 import sys
 import json
 import argparse
 import math
+import bisect
+
+# ASSUMPTION:
+# Given how small this project is, I would do it all in one function if this
+# was a production environment. I use multiple functions here to demonstrate
+# my ability to create clean, modular code.
+
+# I also heavily rely on the built-in functions libraries instead of hand-
+# coding the logic myself, to make my job easier and make me less prone to
+# bugs.
+
+
+def parseJSON(fname) -> list:
+  try:
+    with open(fname,'r') as stores_file:
+      json_dict = json.load(stores_file)
+    stores = [ (i['x'],i['y'],i['name']) for i in json_dict['stores']]
+    return stores
+  except FileNotFoundError:
+    print('File not Found, using default file')
+    with open('stores.json','r') as stores_file:
+      json_dict = json.load(stores_file)
+  except KeyError:
+    print('Invalid JSON file, using default file')
+    with open('stores.json','r') as stores_file:
+      json_dict = json.load(stores_file)
+  stores = [ (i['x'],i['y'],i['name']) for i in json_dict['stores']]
+  return stores
 
 def main() -> int:
-  # TODO: Check that 2 stores do not exist in the same location
-  # Check that json is parsed correctly
   parser = argparse.ArgumentParser()
-  parser.add_argument("filename")
-  with open('../stores.json','r') as stores_file:
-    json_dict = json.load(stores_file)
+  parser.add_argument("fname", default = 'stores.json', help="relative path of json")
+  parser.add_argument("x", type=int, help="x coordinate of point")
+  parser.add_argument("y", type=int, help="y coordinate of point")
+  parser.add_argument("n", type=int, help="number of stores")
+  args = parser.parse_args()
 
-  # Need to think of more elegant solution when list of stores
-  # cannot fit into memory
-  stores = []
-  # stored as dictionary?? 
-  for i in json_dict['stores']:
-    stores.append((i['x'],i['y'],i['name']))
+  stores = parseJSON(args.fname)
 
-  #print(stores)
-
-  # Start thinking about the solution here
-  # Don't think there is a better solution than time O(len(stores))
-  # space(len(stores))
-  # tie between distances
-  # naive solution that works
-  x,y = 3,3
-  n = 3
-  point = [3,3]
+  point = [args.x,args.y]
   nearest_stores = []
   for store in stores:
       s = store[0],store[1]
@@ -37,7 +50,7 @@ def main() -> int:
   nearest_stores.sort()
 
   names = list(list(zip(*nearest_stores))[1])
-  [print(i) for i in names[:n]]
+  [print(i) for i in names[:args.n]]
   return 0
 
 
