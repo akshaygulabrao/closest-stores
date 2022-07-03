@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 import math
-import bisect
+import heapq 
 
 # ASSUMPTION:
 # Given how small this project is, I would do it all in one function if this
@@ -32,6 +32,19 @@ def parseJSON(fname) -> list:
   stores = [ (i['x'],i['y'],i['name']) for i in json_dict['stores']]
   return stores
 
+def findNearest(stores,n,x,y):
+  nearest_stores = []
+  point = [x,y]
+  for store in stores:
+    store_location = [store[0],store[1]]
+    # time O(nlogk) space O(k)
+    if len(nearest_stores) < n:
+      heapq.heappush(nearest_stores, (-1 * math.dist(store_location,point),store[2]))
+    elif -1 * math.dist(store_location,point) > nearest_stores[0][0]:
+      heapq.heappushpop(nearest_stores, (-1 * math.dist(store_location,point),store[2]))
+  #print(list(nearest_stores))
+  return list(nearest_stores)
+    
 def main() -> int:
   parser = argparse.ArgumentParser()
   parser.add_argument("fname", default = 'stores.json', help="relative path of json")
@@ -41,15 +54,9 @@ def main() -> int:
   args = parser.parse_args()
 
   stores = parseJSON(args.fname)
+  nearest_stores = findNearest(stores,args.n,args.x,args.y)
 
-  point = [args.x,args.y]
-  nearest_stores = []
-  for store in stores:
-      s = store[0],store[1]
-      nearest_stores.append((math.dist(point,s),store[2]))
-  nearest_stores.sort()
-
-  names = list(list(zip(*nearest_stores))[1])
+  names = list(list(zip(*nearest_stores[::-1]))[1])
   [print(i) for i in names[:args.n]]
   return 0
 
