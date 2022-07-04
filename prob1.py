@@ -6,14 +6,8 @@ import math
 import heapq 
 
 # ASSUMPTION:
-# Given how small this project is, I would do it all in one function if this
-# was a production environment. I use multiple functions here to demonstrate
-# my ability to create clean, modular code.
-
-# I also heavily rely on the built-in functions libraries instead of hand-
-# coding the logic myself, to make my job easier and make me less prone to
-# bugs.
-
+# I assume stores.json file is a correct file. It is used by default if the supplied file
+# is corrupt.
 
 def parseJSON(fname) -> list:
   try:
@@ -32,6 +26,15 @@ def parseJSON(fname) -> list:
   stores = [ (i['x'],i['y'],i['name']) for i in json_dict['stores']]
   return stores
 
+def removeDuplicateLocations(stores):
+  unique_locations = set()
+  unique_stores = []
+  for i in stores:
+    if (i[0],i[1]) not in unique_locations:
+      unique_locations.add((i[0],i[1]))  
+      unique_stores.append(i)
+  return unique_stores
+
 def findNearest(stores,n,x,y):
   nearest_stores = []
   point = [x,y]
@@ -42,22 +45,22 @@ def findNearest(stores,n,x,y):
       heapq.heappush(nearest_stores, (-1 * math.dist(store_location,point),store[2]))
     elif -1 * math.dist(store_location,point) > nearest_stores[0][0]:
       heapq.heappushpop(nearest_stores, (-1 * math.dist(store_location,point),store[2]))
-  #print(list(nearest_stores))
   return list(nearest_stores)
     
 def main() -> int:
   parser = argparse.ArgumentParser()
   parser.add_argument("fname", default = 'stores.json', help="relative path of json")
-  parser.add_argument("x", type=int, help="x coordinate of point")
-  parser.add_argument("y", type=int, help="y coordinate of point")
-  parser.add_argument("n", type=int, help="number of stores")
+  parser.add_argument("-x", default = 3, type=int, help="x coordinate of point")
+  parser.add_argument("-y", default = 3, type=int, help="y coordinate of point")
+  parser.add_argument("-n", default = 3, type=int, help="number of stores")
   args = parser.parse_args()
 
   stores = parseJSON(args.fname)
+  stores = removeDuplicateLocations(stores)
   nearest_stores = findNearest(stores,args.n,args.x,args.y)
 
   names = list(list(zip(*nearest_stores[::-1]))[1])
-  [print(i) for i in names[:args.n]]
+  [print(i) for i in names]
   return 0
 
 
