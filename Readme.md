@@ -14,3 +14,5 @@ I use a max-heap to keep track of the 3 smallest locations. If a number is less 
 
 
 All functions are from the python standard library.
+
+# Problem 2

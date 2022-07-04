@@ -1,0 +1,54 @@
+{
+    "stores": [
+        {
+            "x": 11,
+            "y": 8,
+            "name": "Ben's Flower Shop"
+        },
+        {
+            "x": 11,
+            "y": 8,
+            "name": "Ben's Flower Shop"
+        },
+        {
+            "x": 9,
+            "y": 7,
+            "name": "Stephen's Donut Shop"
+        },
+        {
+            "x": 10,
+            "y": 1,
+            "name": "Dave's Hot Chicken"
+        },
+        {
+            "x": 7,
+            "y": 5,
+            "name": "Starbucks"
+        },
+        {
+            "x": 9,
+            "y": 12,
+            "name": "Riley's Donut Shop That is Better than Stephen's"
+        },
+        {
+            "x": 10,
+            "y": 4,
+            "name": "The Habit Burger Grill"
+        },
+        {
+            "x": 11,
+            "y": 5,
+            "name": "Yet Another Donut Shop"
+        },
+        {
+            "x": 17,
+            "y": 15,
+            "name": "Bruce's Brews"
+        },
+        {
+            "x": 3,
+            "y": 17,
+            "name": "McDonalds"
+        }
+    ]
+}
