@@ -9,7 +9,7 @@ import heapq
 # I assume stores.json file is a correct file. It is used by default if the supplied file
 # is corrupt.
 
-def parseJSON(fname) -> list:
+def parseJSON(fname):
   try:
     with open(fname,'r') as stores_file:
       json_dict = json.load(stores_file)
@@ -40,14 +40,14 @@ def findNearest(stores,n,x,y):
   point = [x,y]
   for store in stores:
     store_location = [store[0],store[1]]
-    # time O(stores * log (nearest_stores) ) space O( nearest_stores)
+    # time O(nlogk) space O(k)
     if len(nearest_stores) < n:
       heapq.heappush(nearest_stores, (-1 * math.dist(store_location,point),store[2]))
     elif -1 * math.dist(store_location,point) > nearest_stores[0][0]:
       heapq.heappushpop(nearest_stores, (-1 * math.dist(store_location,point),store[2]))
   return list(nearest_stores)
     
-def main() -> int:
+def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("fname", default = 'stores.json', help="relative path of json")
   parser.add_argument("-x", default = 3, type=int, help="x coordinate of point")

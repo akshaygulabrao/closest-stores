@@ -8,6 +8,7 @@ import prob1
 
 # A* search using euclidean distance as h(n) 
 # Assuming diagonal traversal is not allowed
+# Assuming map consists of just '.' and 'X'
 
 # returns list of strings of map
 def parseMap(filename):
@@ -21,6 +22,7 @@ def parseMap(filename):
   return obstacleMap
 
 # populates map with store locations, used later in pathfinding
+# populates dictionary where dict[location] = name, used in pathfinding
 def addStoresToMap(stores,obstacleMap): 
   obstacleMap = [list(i) for i in obstacleMap]
   remaining_stores = {} 
@@ -45,7 +47,7 @@ def findNearestStore(remaining_stores,obstacleMap,y0,x0):
   hn = heuristic(remaining_stores,y0,x0) 
   frontier = [(hn,0,y0,x0)]
   heapq.heapify(frontier)
-
+   
   while len(frontier) != 0:
     # pop the smallest node from the heap
     hn,pathLength,y,x = heapq.heappop(frontier)
@@ -85,8 +87,13 @@ def main():
   obstacleMap,remaining_stores = addStoresToMap(stores,obstacleMap)
 
   # construct initial state for pathfinding
-  [print(findNearestStore(remaining_stores,obstacleMap,args.y,args.x)) for i in range(args.n)]
-   
+  for i in range(args.n):
+    result = findNearestStore(remaining_stores, obstacleMap, args.y, args.x)
+    if result == -1:
+      print('Can not find a store.')
+    else:
+      print(f'Name: {result[0]} Distance: {result[1]}')
+  return 0
 
 
 if __name__ == '__main__':

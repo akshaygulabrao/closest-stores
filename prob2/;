@@ -1,0 +1,99 @@
+import sys
+import argparse
+import heapq
+import math
+import time
+from collections import namedtuple
+import prob1
+
+# A* search using euclidean distance as h(n) 
+# Assuming diagonal traversal is not allowed
+
+# returns list of strings of map
+def parseMap(filename):
+  try:
+    obstacleMapFile = open(filename,'r')
+  except FileNotFoundError:
+    print("File Not Found Error, using default file stores_map.txt")
+    obstacleMapFile = open("stores_map.txt", 'r')
+  obstacleMap = obstacleMapFile.readlines()
+  obstacleMap = [i.strip() for i in obstacleMap]
+  return obstacleMap
+
+# populates map with store locations, used later in pathfinding
+def addStoresToMap(stores,obstacleMap): 
+  obstacleMap = [list(i) for i in obstacleMap]
+  remaining_stores = {} 
+  for i in stores:
+    obstacleMap[i[1]][i[0]] = 'S'
+    remaining_stores[(i[1],i[0])] = i[2]
+  obstacleMap = [''.join(i) for i in obstacleMap]
+  return obstacleMap, remaining_stores
+
+# Returns euclidean distance to nearest store
+def heuristic(stores_left,y,x):
+  hn = min([math.dist((y,x),i) for i in stores_left])
+  return hn
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("storeFile", default = 'stores.json', help="json list of store coordinates")
+  parser.add_argument("mapFile",  default = 'stores_map.txt',help='file of map')
+  parser.add_argument("-x", default = 3, type=int, help="x coordinate of starting point")
+  parser.add_argument("-y", default = 3, type=int, help="y coordinate of starting point")
+  parser.add_argument("-n", default = 3, type=int, help="number of stores")
+  args = parser.parse_args()
+  
+  stores = prob1.parseJSON(args.storeFile)
+  obstacleMap = parseMap(args.mapFile)
+  obstacleMap,remaining_stores = addStoresToMap(stores,obstacleMap)
+  
+  # construct initial state for pathfinding
+  hn = heuristic(remaining_stores,args.y,args.x) 
+  frontier = [(hn,0,args.y,args.x)]
+  heapq.heapify(frontier)
+  explored = set()
+  explored.add((args.y,args.x))
+  ans = []
+  while len(frontier) != 0:
+    #hn, pathLength, y, x = print(heapq.heappop(frontier))
+    hn,pathLength,y,x = heapq.heappop(frontier)
+    print(hn,y,x)
+    #obstacleMap[y] = obstacleMap[y][:x] + 'p' + obstacleMap[y][x+1:]
+    if obstacleMap[y][x] == 'S':
+      ans.append(remaining_stores.pop((y,x)))   
+      print('Found',pathLength,ans)
+      if args.n == len(ans): 
+        break
+    elif obstacleMap[y][x] == '.':
+      obstacleMap[y] = obstacleMap[y][:x] + 0 + obstacleMap[y][x+1:]
+    elif obstacleMap[y][x] != 'X' and obstacleMap[y][x] != '.':
+      count = obstacleMap[y][x]
+      count = count + 1 % 10
+      obstacleMap[y] = obstacleMap[y][:x] + str(count) + obstacleMap[y][x+1:]
+    [print(i) for i in obstacleMap]
+    time.sleep(1)
+    # Consider points for exploration 
+    if obstacleMap[y-1][x] != 'X' and y - 1 >= 0 and (y-1,x) not in explored:
+      explored.add((y-1,x))
+      frontier.append((heuristic(remaining_stores,y-1,x) + pathLength, pathLength+1,y-1,x))
+    if obstacleMap[y][x-1] != 'X' and x - 1 >= 0 and (y,x-1) not in explored:
+      explored.add((y,x-1))
+      frontier.append( (heuristic(remaining_stores, y, x-1) + pathLength, pathLength+1, y, x-1))
+    if obstacleMap[y+1][x] != 'X' and y + 1 < len(obstacleMap) and (y+1,x) not in explored:
+      explored.add((y+1,x))
+      new_state = State(heuristic(remaining_stores, y+1, x) + pathLength, pathLength+1, y+1, x)
+      frontier.append( new_state)
+    if obstacleMap[y][x+1] != 'X' and x + 1 < len(obstacleMap[y]) and (y,x+1) not in explored:
+      explored.add((y,x+1))
+      new_state = State(heuristic(remaining_stores, y, x+1) + pathLength, pathLength+1, y, x+1)
+      frontier.append(new_state) 
+  [print(i) for i in ans]
+  return 0
+
+
+if __name__ == '__main__':
+  sys.exit(main())
+
+
+
