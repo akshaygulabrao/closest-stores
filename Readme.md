@@ -4,15 +4,25 @@ Given (1) a list of stores with x,y position and name (2) a point p and (3) an i
 Please do not use stores.json as the filename, it is used as a default file incase the file provided in the argument is corrupt.
 
 ## Usage
-    python3 prob1.py -x [x-coordinate] -y [y-coordinate] -n [number of nearest stores]
+    python3 prob1.py [json-filename] -x [x-coordinate] -y [y-coordinate] -n [number of nearest stores]
 
 ## Quick Test
     python3 prob1.py stores.json -x 3 -y 3 -n 3
 
 ## Solution
-I use a max-heap to keep track of the 3 smallest locations. If a number is less than the max of the heap and the length of the heap is already the number of nearest stores, I add it to the heap and remove the max. To fill the heap in the beginning, I push all the values. This will cause ties to be broken by order in original list.
+I iterate through the list of stores one time and keep a max-heap of size k on the side, resulting in a time complexity of O(nlogk) and space complexity of O(k). If the max-heap is less than size k, I append to the heap with a priority value of the distance between the starting point and current store. When the heap is full, I remove the top item of the heap and replace the current item to the heap *if* the distance of the current store is less than the top of the heap (the farthest distance).
 
 
 All functions are from the python standard library.
 
 # Problem 2
+
+## Usage
+    python3 prob2.py [map filename] [json filename] -x [x-coordinate] -y [y-coordinate] -n [number of nearest stores]
+
+## Quick Test
+    python3 prob2.py stores_map.txt stores.json -x 3 -y 3 -n 3
+
+## Solution
+
+I use A* search with Euclidean distance to nearest store as a heuristic. I use a heap to store all states to explore with the value of min_distance to store + pathLength. Time O(length * width * log(length * width)) Space O(length * width)
