@@ -5,10 +5,10 @@ Please do not use stores.json as the filename, it is used as a default file inca
 
 ## Usage
     python3 prob1.py [json-filename] -x [x-coordinate] -y [y-coordinate] -n [number of nearest stores]
+Make sure you are in the prob1 directory.
 
 ## Quick Test
     python3 prob1.py stores.json -x 3 -y 3 -n 3
-Make sure you are in the prob1 directory.
 
 ## Solution
 I iterate through the list of stores one time and keep a max-heap of size k on the side, resulting in a time complexity of O(nlogk) and space complexity of O(k). If the max-heap is less than size k, I append to the heap with a priority value of the distance between the starting point and current store. When the heap is full, I remove the top item of the heap and replace the current item to the heap *if* the distance of the current store is less than the top of the heap (the farthest distance).
